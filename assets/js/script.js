@@ -1,24 +1,24 @@
 $(document).ready(function () {
     //Global Variables Defined
     var apikey = "a1127dc4ba5ff83b7283d877dfb9a775"; //API Key for using weather App
-    var units = "imperial"; //Set the units to come back as Farenheit
-  //Set JQuery Event Handler for click event on Search Button
+    var units = "imperial"; //Farenheit
+  //JQuery for Search Button
   $("#searchBtn").on("click", function () {
-    // Get the value from the id=search input field
+    
     var cityValue = $("#search").val();
 
-    // Clear input box
+   
     $("#search").val("");
 
-    //Call weatherForcast function using the search value
+   
     weatherForcast(cityValue);
   });
- // Set JQuery Event Handler for any list item in history and then call the weatherForcast function
+ // Set JQuery for any weatherForcast function
  $("#history-list").on("click", "li", function () {
-    var historyValue = $(this).text(); //Grab the value of the history item
-    weatherForcast(historyValue); //call the seatherForcast function with the histroy Value
+    var historyValue = $(this).text(); 
+    weatherForcast(historyValue); 
   });
-  // Define function to create row for history with previous cities and append to id=history-list element
+ 
   function createRow(city) {
     var historyListItem = $("#history-list");
     var li = $("<li>")
@@ -26,7 +26,7 @@ $(document).ready(function () {
       .text(city);
     historyListItem.prepend(li);
   }
-  //Define weatherForcast query to get weather forcast
+  
   function weatherForcast(cityValue) {
     var queryURL =
       "https://api.openweathermap.org/data/2.5/weather?q=" +
@@ -36,25 +36,24 @@ $(document).ready(function () {
       "&appid=" +
       apikey;
 
-    //Define Ajax call
+    //Define Ajax 
     $.ajax({
       url: queryURL,
       type: "GET",
       dataType: "json",
     }).then(function (response) {
-      // create history link for this search
+     
       if (history.indexOf(cityValue) === -1) {
         history.push(cityValue);
         window.localStorage.setItem("history", JSON.stringify(history));
 
-        //Create History Row on Screen
+        
         createRow(cityValue);
       }
 
-      // cRemove content from the id=today element
+    
       $("#today").empty();
 
-      // create html content for current weather
       var title = $("<h3>")
         .addClass("card-title")
         .text(response.name + " (" + new Date().toLocaleDateString() + ")");
