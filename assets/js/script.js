@@ -18,3 +18,11 @@ $(document).ready(function () {
     var historyValue = $(this).text(); //Grab the value of the history item
     weatherForcast(historyValue); //call the seatherForcast function with the histroy Value
   });
+  // Define function to create row for history with previous cities and append to id=history-list element
+  function createRow(city) {
+    var historyListItem = $("#history-list");
+    var li = $("<li>")
+      .addClass("list-group-item list-group-item-action")
+      .text(city);
+    historyListItem.prepend(li);
+  }
