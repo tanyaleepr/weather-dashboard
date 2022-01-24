@@ -26,3 +26,62 @@ $(document).ready(function () {
       .text(city);
     historyListItem.prepend(li);
   }
+  //Define weatherForcast query to get weather forcast
+  function weatherForcast(cityValue) {
+    var queryURL =
+      "https://api.openweathermap.org/data/2.5/weather?q=" +
+      cityValue +
+      "&units=" +
+      units +
+      "&appid=" +
+      apikey;
+
+    //Define Ajax call
+    $.ajax({
+      url: queryURL,
+      type: "GET",
+      dataType: "json",
+    }).then(function (response) {
+      // create history link for this search
+      if (history.indexOf(cityValue) === -1) {
+        history.push(cityValue);
+        window.localStorage.setItem("history", JSON.stringify(history));
+
+        //Create History Row on Screen
+        createRow(cityValue);
+      }
+
+      // cRemove content from the id=today element
+      $("#today").empty();
+
+      // create html content for current weather
+      var title = $("<h3>")
+        .addClass("card-title")
+        .text(response.name + " (" + new Date().toLocaleDateString() + ")");
+      var card = $("<div>").addClass("card");
+      var wind = $("<p>")
+        .addClass("card-text")
+        .text("Wind Speed: " + response.wind.speed + " MPH");
+      var humid = $("<p>")
+        .addClass("card-text")
+        .text("Humidity: " + response.main.humidity + "%");
+      var temp = $("<p>")
+        .addClass("card-text")
+        .text("Temperature: " + response.main.temp + " °F");
+      var cardBody = $("<div>").addClass("card-body");
+      var img = $("<img>").attr(
+        "src",
+        "https://openweathermap.org/img/w/" + response.weather[0].icon + ".png"
+      );
+
+      // merge and add to page
+      title.append(img);
+      cardBody.append(title, temp, humid, wind);
+      card.append(cardBody);
+      $("#today").append(card);
+
+      // call other api endpoints
+      getForecast(cityValue);
+      getUVIndex(response.coord.lat, response.coord.lon);
+    });
+  }
