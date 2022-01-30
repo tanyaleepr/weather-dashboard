@@ -1,8 +1,10 @@
+// this script is for the weather dashboard
+
 $(document).ready(function () {
-    //Global Variables Defined
+    //Global Variables 
     var apikey = "a1127dc4ba5ff83b7283d877dfb9a775"; //API Key for using weather App
     var units = "imperial"; //Farenheit
-  //JQuery for Search Button
+  //JQuery
   $("#searchBtn").on("click", function () {
     
     var cityValue = $("#search").val();
@@ -13,7 +15,10 @@ $(document).ready(function () {
    
     weatherForcast(cityValue);
   });
- // Set JQuery for any weatherForcast function
+
+
+
+ // JQuery for weatherForcast function
  $("#history-list").on("click", "li", function () {
     var historyValue = $(this).text(); 
     weatherForcast(historyValue); 
@@ -36,7 +41,7 @@ $(document).ready(function () {
       "&appid=" +
       apikey;
 
-    //Define Ajax 
+   
     $.ajax({
       url: queryURL,
       type: "GET",
@@ -73,18 +78,18 @@ $(document).ready(function () {
         "https://openweathermap.org/img/w/" + response.weather[0].icon + ".png"
       );
 
-      // merge and add to page
+     
       title.append(img);
       cardBody.append(title, temp, humid, wind);
       card.append(cardBody);
       $("#today").append(card);
 
-      // call other api endpoints
+     
       getForecast(cityValue);
       getUVIndex(response.coord.lat, response.coord.lon);
     });
   }
-//Define getForcast query to get 5 day forcast
+
 function getForecast(cityValue) {
     var queryURL =
       "https://api.openweathermap.org/data/2.5/forecast?q=" +
@@ -94,28 +99,27 @@ function getForecast(cityValue) {
       "&appid=" +
       apikey;
 
-    //Define Ajax call
+   
     $.ajax({
       url: queryURL,
       type: "GET",
       dataType: "json",
     }).then(function (response) {
-      // Replace any existing content with title and empty row
+      
       $("#forecast")
         .html('<h4 class="mt-3">5-Day Forecast:</h4>')
         .append('<div class="row">');
 
-      // loop over all forecasts
+      
       for (var i = 0; i < response.list.length; i++) {
-        // only look at forecasts around 3:00pm
+        
         if (response.list[i].dt_txt.indexOf("15:00:00") !== -1) {
-          // create html elements for a bootstrap card
+          //  html elements for a bootstrap card
           var col = $("<div>").addClass("col-md-2");
           var card = $("<div>").addClass("card bg-primary text-white");
           var body = $("<div>").addClass("card-body p-2");
 
-          //Added in a fix to date format for Safari browsers since the return date format is not supported
-          //Needed to replace the dash "-" with the forward "/" slash
+         
           tempDate = new Date(
             response.list[i].dt_txt.replace(/-/g, "/")
           ).toLocaleDateString();
@@ -136,7 +140,7 @@ function getForecast(cityValue) {
             .addClass("card-text")
             .text("Humidity: " + response.list[i].main.humidity + "%");
 
-          // merge together and put on page
+         
           col.append(card.append(body.append(title, img, p1, p2)));
           $("#forecast .row").append(col);
         }
@@ -144,7 +148,7 @@ function getForecast(cityValue) {
     });
   }
 
-  //Define getUVIndex query to get UV Index for a particular city by latitude and longitude
+  // getUVIndex query = UV Index for a city by latitudes and longitudes
   function getUVIndex(latitude, longitude) {
     var queryURL =
       "https://api.openweathermap.org/data/2.5/uvi?appid=" +
@@ -154,7 +158,7 @@ function getForecast(cityValue) {
       "&lon=" +
       longitude;
 
-    //Define Ajax call
+    
     $.ajax({
       url: queryURL,
       type: "GET",
@@ -163,7 +167,7 @@ function getForecast(cityValue) {
       var uv = $("<p>").text("UV Index: ");
       var btn = $("<span>").addClass("btn btn-sm").text(response.value);
 
-      // change color depending on uv value
+      // colors for uv value
       if (response.value < 3) {
         btn.addClass("btn-success");
       } else if (response.value < 7) {
@@ -176,15 +180,15 @@ function getForecast(cityValue) {
     });
   }
 
-  // get current history, if any
+  // current history
   var history = JSON.parse(window.localStorage.getItem("history")) || [];
 
-  //Grab the latest history value and use that to populate the weather items
+  //latest history value 
   if (history.length > 0) {
     weatherForcast(history[history.length - 1]);
   }
 
-  //Populate the history items from local storage items
+  //local storage 
   for (var i = 0; i < history.length; i++) {
     createRow(history[i]);
   }
